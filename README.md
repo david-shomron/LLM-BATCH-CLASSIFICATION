@@ -16,7 +16,7 @@ The business aim is to reduce manual occupation coding and support timely labour
 
 The knowledge base is built before retrieval, independently of survey queries. E5 uses the spreadsheet-derived `text_context`; the reranker and selector use cards enriched with DOCX evidence. The selector returns structured JSON, and the code validates that its choice belongs to the shortlist.
 
-This design can use a maintained taxonomy without retraining a classifier for every occupation. Its limits include missed retrieval candidates, ambiguous survey responses and incorrect model decisions. A valid output code does not guarantee a correct classification.
+The proposed design combines pretrained language understanding with a maintainable occupation taxonomy, reducing dependence on large occupation-specific training datasets. Titles, aliases and definitions can be updated in the knowledge base without retraining model weights, while retrieved candidates and source-backed cards make classification evidence easier to inspect. These strengths are particularly useful when labeled examples are scarce or the taxonomy evolves. A supervised classifier may achieve comparable or better accuracy with lower inference cost when representative labeled data are available; the relative benefits should therefore be established through controlled evaluation.
 
 ## Repository files
 
@@ -77,3 +77,7 @@ The 200 source records produce **138 retained cases**, with **113 unique usable 
 These are descriptive results on a small dummy dataset, not an estimate of performance on national survey data. Macro F1 averages over reference-supported classes. Validation on representative, adjudicated survey data is required before operational use.
 
 Exports preserve the original `SemelMishlachSofi`; `evaluation_label` shows the mapped reference used in evaluation (`7414→7411`, `5222→5223`). `identical_label` compares the prediction with the original code and is blank for partial/unknown labels, so its average can differ from the reported mapped-label accuracy. The Excel **Column descriptions** sheet explains all exported fields.
+
+## Proposed comparison with supervised learning
+
+To compare the approaches, build a representative **gold-standard dataset of real survey responses**, independently labeled by occupation experts, with disagreements adjudicated. Use fixed train, validation and held-out test partitions, keeping duplicate or linked responses together. Train a supervised transformer classifier on the training set and tune both approaches using validation data only. Evaluate both on the same test cases, using identical survey fields and target codes. Compare **Top-1 accuracy, Macro F1, rare-occupation performance, runtime and compute cost per 1,000 cases**, with paired confidence intervals. Repeating the comparison at different training-set sizes would show how their relative performance changes as labeled data become available.
